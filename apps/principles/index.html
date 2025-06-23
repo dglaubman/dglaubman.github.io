@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+
+<style>
+  em {
+      color: blue;
+  }
+  body {
+      width: 1200px;
+      height: 800px;
+  }
+  p {
+      font-family: Arial, sans-serif;
+  }
+  button {
+      font-size: 16px;
+      left: 50%;
+      color: blue;
+  }
+  .panel {
+      float: left;
+      width: 40%;
+  }
+
+</style>
+    <title>The fall of Icarus</title>
+    <link rel="stylesheet" type="text/css" href="/css/main.css">
+
+</head>
+<body>
+<script src="scripts/d3.v7.min.js"></script>
+<script src="scripts/graphviz.umd.js"></script>
+<script src="scripts/d3-graphviz.js"></script>
+		<nav>
+    		<ul>
+        		<li><a href="/">Home</a></li>
+<!--	        	<li><a href="/about">About</a></li>
+        		<li><a href="/cv">CV</a></li>
+        		<li><a href="/blog">Blog</a></li>
+-->
+    		</ul>
+		</nav>
+
+
+<h2>Interaction of Data Mesh principles</h2>
+<div class="panel">
+	    <div id="text">
+            <p>What are the four principles, and what is the interplay between them?</p>
+
+<h3>Domain-oriented ownership</h3>
+<p>By moving data ownership closer to a business domain, we minimize the gap between the source of data and its uses, thereby increasing data business truthfulness.
+</p>
+<h4>Preventing data silos</h4>
+<p>However, this can lead to data siloing, resulting in data that is not easily accessible, understandable or even usable outside of its domain team.
+We can break down these silos by treating data as a product: facilitate <em>sharing</em> by knowing our customers and their use case and ensuring our product can be found, understand and used both inside and outside the domain.
+</p>
+
+<h4>Minimizing external dependencies</h4>
+<p>Decentralized domain teams can gain <em>autonomy</em> by leveraging a self-serve data platform.  This reduces their dependency on other teams and their priorities.
+</p>
+
+<h4>Enabling cross-domain composition</h4>
+<p>Decentralized teams are great, but how will their data products <em>interoperate</em> with those from other domains and teams? Develop a system of federated governance, where  global policies and standards are set by a central cross-functional body, while conforming local decisions are made and implemented at the domain level.
+</p>
+
+<h3>Data as a product</h3>
+<p>Applying product thinking to analytic data can help teams share high-quality datasets with their customers.
+</p>
+<h4>Push common capabilities down to a self-serve data platform</h4>
+<p>However, there is a lot of work involved in building, maintaining and publishing a high-quality data product.
+Much of this work is common to all data products, and we can delegate the brunt to our self-serve data platform.  This enables us to increase our <em>speed</em> to market and hence lower our costs.
+</p>
+<h4>Leverage federated computational governance to secure your analytical data</h4>
+<p>We want our analytic data to be shared, but it must also be secure. Data products rely on federated computational governance to provide keep their data secure and <em>safe</em>.
+</p>
+
+<h3>Federated computational governance</h3>
+<p>Finally, the self-serve data platform provide affordances for monitoring and <em>enforcing</em> the security policies enacted by the governance  bodies.
+</p>
+</div>
+(source: taken from <a href="https://www.oreilly.com/library/view/data-mesh/9781492092384/">Data Mesh, pp. 11-11</a>)
+</div>
+<div class="panel">
+<div>
+<button onclick="resumeAnimation()">Click here to animate the interactions.</button>
+</div>
+<div id="graph"></div>
+</div>
+<script>
+
+var dotIndex = 1;
+  var graphviz = d3.select("#graph").graphviz()
+      .options({"useWorker": false})
+      .transition(function () {
+        return d3.transition("main")
+            .ease(d3.easeLinear)
+            .delay(500)
+            .duration(2000)
+    })
+    .logEvents(true)
+    .on("initEnd", renderStatic);
+
+
+function resumeAnimation() {
+
+    // Resume the transition
+    render()
+}
+
+function renderStatic() {
+    var dotLines = dots[0];
+    var dot = dotLines.join('');
+    graphviz.renderDot(dot);
+}
+
+function render() {
+    var dotLines = dots[dotIndex];
+    var dot = dotLines.join('');
+    graphviz
+        .renderDot(dot)
+        .on("end", function () {
+            dotIndex = (dotIndex + 1) % dots.length;
+	    render();
+        })
+}
+
+  var dots = [
+      [
+	  'digraph data_mesh {',
+
+	  '    size = "16,9" fixedsize=true pad=0.5 splines=line',
+	  '    node [fontcolor=blue fontsize=24 fixedsize=true height= 1.5 width=4 shape=ellipse ]',
+	  '    edge [arrowhead="vee" color="#555555"  penwidth=2.5 fontsize=20 minlen=4 fontcolor=blue];',
+	  '    domain [label="Domain-oriented\nownership"];',
+	  '    governance [label="Federated computational\ngovernance"];',
+	  '    platform [label="Self-serve data platform"];',
+	  '    product [label="Data as a product"];',
+
+	  '    domain -> governance  [label="interoperability", style=invis]',
+	  '    product -> platform  [label="  speed", style =invis]',
+	  '    rank = same { domain -> product [label="sharing", style=invis] };',
+	  '    rank = same {governance -> platform [label="enforcement", style=invis] };',
+	  '    domain -> platform [taillabel="autonomy  ", labeldistance=6, style=invis]',
+	  '    product -> governance [taillabel="safety", labeldistance=6, style=invis]',
+
+          '}'
+    ],
+      [
+	  'digraph data_mesh {',
+
+	  '    size = "16,9" fixedsize=true pad=0.5 splines=line',
+	  '    node [fontcolor=blue fontsize=24 fixedsize=true height= 1.5 width=4 shape=ellipse ]',
+	  '    edge [arrowhead="vee" color="#555555"  penwidth=2.5 fontsize=20 minlen=4 fontcolor=blue];',
+	  '    domain [label="Domain-oriented\nownership"];',
+	  '    governance [label="Federated computational\ngovernance"];',
+	  '    platform [label="Self-serve data platform"];',
+	  '    product [label="Data as a product"];',
+
+	  '    domain -> governance  [label="  interoperability", style=invis]',
+	  '    product -> platform  [label="  speed", style =invis]',
+          '    rank = same { domain -> product [label="sharing" labeltooltip = "Overcome data siloes with sharable data products."] };',
+	  '    rank = same {governance -> platform [label="enforcement", style=invis] };',
+	  '    domain -> platform [taillabel="autonomy  ", labeldistance=6, style=invis]',
+	  '    product -> governance [taillabel="safety", labeldistance=6, style=invis]',
+
+          '}'
+    ],
+      [
+	  'digraph data_mesh {',
+
+	  '    size = "16,9" fixedsize=true pad=0.5 splines=line',
+	  '    node [fontcolor=blue fontsize=24 fixedsize=true height= 1.5 width=4 shape=ellipse ]',
+	  '    edge [arrowhead="vee" color="#555555"  penwidth=2.5 fontsize=20 minlen=4 fontcolor=blue];',
+	  '    domain [label="Domain-oriented\nownership"];',
+	  '    governance [label="Federated computational\ngovernance"];',
+	  '    platform [label="Self-serve data platform"];',
+	  '    product [label="Data as a product"];',
+
+	  '    domain -> governance  [label="  interoperability", style=invis]',
+	  '    product -> platform  [label="  speed", style =invis]',
+	  '    rank = same { domain -> product [label="sharing"] };',
+	  '    rank = same {governance -> platform [label="enforcement", style=invis] };',
+	  '    domain -> platform [taillabel="autonomy  ", labeldistance=6]',
+	  '    product -> governance [taillabel="safety", labeldistance=6, style=invis]',
+          '}'
+    ],
+      [
+	  'digraph data_mesh {',
+
+	  '    size = "16,9" fixedsize=true pad=0.5 splines=line',
+	  '    node [fontcolor=blue fontsize=24 fixedsize=true height= 1.5 width=4 shape=ellipse ]',
+	  '    edge [arrowhead="vee" color="#555555"  penwidth=2.5 fontsize=20 minlen=4 fontcolor=blue];',
+          '    domain [label="Domain-oriented\nownership"];',
+	  '    governance [label="Federated computational\ngovernance"];',
+	  '    platform [label="Self-serve data platform"];',
+	  '    product [label="Data as a product"];',
+
+	  '    domain -> governance  [label="  interoperability"]',
+	  '    product -> platform  [label="  speed", style =invis]',
+	  '    rank = same { domain -> product [label="sharing"] };',
+	  '    rank = same {governance -> platform [label="enforcement", style=invis] };',
+	  '    domain -> platform [taillabel="autonomy  ", labeldistance=6]',
+	  '    product -> governance [taillabel="safety", labeldistance=6, style=invis]',
+
+          '}'
+    ],
+      [
+	  'digraph data_mesh {',
+
+	  '    size = "16,9" fixedsize=true pad=0.5 splines=line',
+	  '    node [fontcolor=blue fontsize=24 fixedsize=true height= 1.5 width=4 shape=ellipse ]',
+	  '    edge [arrowhead="vee" color="#555555"  penwidth=2.5 fontsize=20 minlen=4 fontcolor=blue];',
+	  '    domain [label="Domain-oriented\nownership"];',
+	  '    governance [label="Federated computational\ngovernance"];',
+	  '    platform [label="Self-serve data platform"];',
+	  '    product [label="Data as a product"];',
+
+          '    domain -> governance  [label="  interoperability"]',
+          '    product -> platform  [label="  speed"]',
+	  '    rank = same { domain -> product [label="sharing"] };',
+	  '    rank = same {governance -> platform [label="enforcement", style=invis] };',
+	  '    domain -> platform [taillabel="autonomy  ", labeldistance=6]',
+	  '    product -> governance [taillabel="safety", labeldistance=6, style=invis]',
+
+          '}'
+    ],
+      [
+	  'digraph data_mesh {',
+
+	  '    size = "16,9" fixedsize=true pad=0.5 splines=line',
+	  '    node [fontcolor=blue fontsize=24 fixedsize=true height= 1.5 width=4 shape=ellipse ]',
+	  '    edge [arrowhead="vee" color="#555555"  penwidth=2.5 fontsize=20 minlen=4 fontcolor=blue];',
+	  '    domain [label="Domain-oriented\nownership"];',
+	  '    governance [label="Federated computational\ngovernance"];',
+	  '    platform [label="Self-serve data platform"];',
+	  '    product [label="Data as a product"];',
+
+	  '    domain -> governance  [label="  interoperability"]',
+	  '    product -> platform  [label="  speed"]',
+	  '    rank = same { domain -> product [label="sharing"] };',
+	  '    rank = same {governance -> platform [label="enforcement", style=invis] };',
+	  '    domain -> platform [taillabel="autonomy  ", labeldistance=6]',
+	  '    product -> governance [taillabel="safety", labeldistance=6]',
+
+          '}'
+    ],
+      [
+	  'digraph data_mesh {',
+
+	  '    size = "16,9" fixedsize=true pad=0.5 splines=line',
+	  '    node [fontcolor=blue fontsize=24 fixedsize=true height= 1.5 width=4 shape=ellipse ]',
+	  '    edge [arrowhead="vee" color="#555555"  penwidth=2.5 fontsize=20 minlen=4 fontcolor=blue];',
+	  '    domain [label="Domain-oriented\nownership"];',
+	  '    governance [label="Federated computational\ngovernance"];',
+	  '    platform [label="Self-serve data platform"];',
+	  '    product [label="Data as a product"];',
+
+	  '    domain -> governance  [label="  interoperability"]',
+	  '    product -> platform  [label="  speed"]',
+	  '    rank = same { domain -> product [label="sharing"] };',
+	  '    rank = same {governance -> platform [label="enforcement"] };',
+	  '    domain -> platform [taillabel="autonomy  ", labeldistance=6]',
+	  '    product -> governance [taillabel="safety", labeldistance=6]',
+
+          '}'
+      ]
+];
+
+</script>
+</body>
+
